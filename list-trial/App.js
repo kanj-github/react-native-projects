@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SafeAreaView, AlertIOS } from 'react-native';
+import { SafeAreaView, AlertIOS, AsyncStorage } from 'react-native';
 
 import TopBar from './TopBar.js';
 import BottomBar from './BottomBar.js';
@@ -10,9 +10,32 @@ class Window extends Component {
     constructor(props) {
         super(props);
 
-        let names = new Set(['Devin', 'Jackson', 'James', 'Joel', 'John', 'Jillian', 'Jimmy', 'Julie']);
+        this.state = { items: new Set([]), topBarSettings: { editing: false } };
 
-        this.state = { items: names, topBarSettings: { editing: false } };
+        this.loadData();
+    }
+
+    loadData = async () => {
+        try {
+            const value = await AsyncStorage.getItem('WHITELIST');
+            if (value !== null) {
+                const set = new Set(JSON.parse(value));
+                this.setState(previousState => {
+                    previousState.items = set;
+                    return previousState;
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    persistData = async (set) => {
+        try {
+            await AsyncStorage.setItem('WHITELIST', JSON.stringify([...set]));
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     render() {
@@ -95,6 +118,10 @@ class Window extends Component {
         this.setState(previousState => {
             previousState.items.add(text);
             previousState.topBarSettings.editing = false;
+
+            // save data
+            this.persistData(previousState.items);
+
             return previousState;
         });
     }
@@ -122,6 +149,10 @@ class Window extends Component {
                 previousState.items.delete(it);
             });
             previousState.topBarSettings.editing = false;
+
+            // save data
+            this.persistData(previousState.items);
+
             return previousState;
         });
     }
