@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import { SafeAreaView, AlertIOS } from 'react-native';
 
 import TopBar from './TopBar.js';
 import BottomBar from './BottomBar.js';
@@ -23,6 +23,7 @@ class Window extends Component {
         this.handleAdd = this.handleAdd.bind(this);
         this.handleEditStart = this.handleEditStart.bind(this);
         this.handleEditCancel = this.handleEditCancel.bind(this);
+        this.handleAddInput = this.handleAddInput.bind(this);
     }
 
     render() {
@@ -72,6 +73,8 @@ class Window extends Component {
     }
 
     handleEditCancel() {
+        this.toBeDeleted.clear();
+
         this.setState(previousState => {
             previousState.topBarSettings.editing = false;
             return previousState;
@@ -79,7 +82,30 @@ class Window extends Component {
     }
 
     handleAdd() {
+        AlertIOS.prompt(
+            'Add',
+            'Enter string to add it to whitelist.',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => { },
+                    style: 'cancel',
+                },
+                {
+                    text: 'Done',
+                    onPress: text => { this.handleAddInput(text) },
+                },
+            ],
+            'plain-text',
+        );
+    }
 
+    handleAddInput(text) {
+        this.setState(previousState => {
+            previousState.items.add(text);
+            previousState.topBarSettings.editing = false;
+            return previousState;
+        });
     }
 
     onSelectionUpdated(selections) {
@@ -101,8 +127,6 @@ class Window extends Component {
     }
 
     handleDeleteClick() {
-        console.log(this.toBeDeleted);
-
         this.setState(previousState => {
             this.toBeDeleted.forEach(it => {
                 previousState.items.delete(it);
