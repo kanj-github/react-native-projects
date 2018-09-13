@@ -8,7 +8,7 @@ class BottomBar extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {deleteAllowed: false};
+        this.state = { deleteAllowed: false };
         this.onDeleteClicked = this.onDeleteClicked.bind(this);
         this.onSelectAllClicked = this.onSelectAllClicked.bind(this);
 

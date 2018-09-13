@@ -1,31 +1,25 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { View, Button } from 'react-native';
 
 import styles from './Styles.js';
 
-class TopBar extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = { editing: false };
-        this.onEditClicked = this.onEditClicked.bind(this);
-        this.onCancelEditClicked = this.onCancelEditClicked.bind(this);
-        this.onAddClicked = this.onAddClicked.bind(this);
-    }
+class TopBar extends PureComponent {
 
     render() {
         let leftButton;
-        if (this.state.editing) {
-            leftButton = <Button onPress={this.onCancelEditClicked} title="Cancel" />
+        if (this.props.editing) {
+            leftButton = <Button onPress={this.props.onEditCancel} title="Cancel" />
+        } else if (this.props.editEnabled) {
+            leftButton = <Button onPress={this.props.onEditStart} title="Edit" />
         } else {
-            leftButton = <Button onPress={this.onEditClicked} title="Edit" />
+            leftButton = <Button onPress={() => { }} title="Edit" color='cadetblue' />
         }
 
         let rightButton;
-        if (this.state.editing) {
+        if (this.props.editing) {
             rightButton = <Button onPress={() => { }} title="Add" color='cadetblue' />
         } else {
-            rightButton = <Button onPress={this.onAddClicked} title="Add" />
+            rightButton = <Button onPress={this.props.onAdd} title="Add" />
         }
 
         return (
@@ -34,30 +28,6 @@ class TopBar extends Component {
                 {rightButton}
             </View>
         );
-    }
-
-    onEditClicked() {
-        this.props.window.setState(previousState => {
-            previousState.topBarSettings.editing = true;
-            return previousState;
-        });
-        this.setState(previousState => {
-            return { editing: true };
-        })
-    }
-
-    onCancelEditClicked() {
-        this.props.window.setState(previousState => {
-            previousState.topBarSettings.editing = false;
-            return previousState;
-        });
-        this.setState(previousState => {
-            return { editing: false };
-        })
-    }
-
-    onAddClicked() {
-
     }
 }
 

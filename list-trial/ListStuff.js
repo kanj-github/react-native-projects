@@ -32,17 +32,13 @@ class StringList extends Component {
         super(props);
         this.state = { selections: new Set([]) };
 
-        this.selectAll = this.selectAll.bind(this);
+        this.select = this.select.bind(this);
         props.callback(this);
     }
 
-    selectAll() {
-        let selections = new Set([]);
-        this.props.data.forEach(it => {
-            selections.add(it.key);
-        });
-        this.setState( previousState => {
-            return {selections}
+    select(selections) {
+        this.setState(previousState => {
+            return { selections }
         });
     }
 

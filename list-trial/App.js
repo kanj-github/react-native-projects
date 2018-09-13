@@ -10,13 +10,19 @@ class Window extends Component {
     constructor(props) {
         super(props);
 
-        this.state = { topBarSettings: { editing: false } };
+        let names = new Set(['Devin', 'Jackson', 'James', 'Joel', 'John', 'Jillian', 'Jimmy', 'Julie']);
+
+        this.state = { items: names, topBarSettings: { editing: false } };
+
         this.onSelectionUpdated = this.onSelectionUpdated.bind(this);
         this.setDeleteAllowed = this.setDeleteAllowed.bind(this);
         this.handleDeleteClick = this.handleDeleteClick.bind(this);
         this.handleSelectAllClick = this.handleSelectAllClick.bind(this);
-        this._setBottomBarCallback = this._setBottomBarCallback.bind(this);
-        this._setListCallback = this._setListCallback.bind(this);
+        this.bottomBarCallback = this.bottomBarCallback.bind(this);
+        this.listCallback = this.listCallback.bind(this);
+        this.handleAdd = this.handleAdd.bind(this);
+        this.handleEditStart = this.handleEditStart.bind(this);
+        this.handleEditCancel = this.handleEditCancel.bind(this);
     }
 
     render() {
@@ -25,30 +31,60 @@ class Window extends Component {
         if (this.state.topBarSettings.editing) {
             bottomBar = <BottomBar
                 window={this}
-                callback = {this._setBottomBarCallback}
+                callback={this.bottomBarCallback}
             />;
         } else {
             bottomBar = "";
         }
+
+        const listData = [...this.state.items].map(it => {
+            return { key: it };
+        });
 
         return (
             <SafeAreaView style={{
                 flex: 1,
                 alignItems: 'stretch',
             }}>
-                <TopBar window={this} />
+                <TopBar
+                    editEnabled={this.state.items.size > 0}
+                    editing={this.state.topBarSettings.editing}
+                    onEditStart={this.handleEditStart}
+                    onEditCancel={this.handleEditCancel}
+                    onAdd={this.handleAdd}
+                />
                 <StringList
-                    window = {this}
-                    callback = {this._setListCallback}
-                    data = {[{key: 'Devin'}, {key: 'Jackson'}, {key: 'James'}, {key: 'Joel'}, {key: 'John'}, {key: 'Jillian'}, {key: 'Jimmy'}, {key: 'Julie'},]}
-                    selectable = {this.state.topBarSettings.editing}
+                    window={this}
+                    callback={this.listCallback}
+                    data={listData}
+                    selectable={this.state.topBarSettings.editing}
                 />
                 {bottomBar}
             </SafeAreaView>
         );
     }
 
+    handleEditStart() {
+        this.setState(previousState => {
+            previousState.topBarSettings.editing = true;
+            return previousState;
+        });
+    }
+
+    handleEditCancel() {
+        this.setState(previousState => {
+            previousState.topBarSettings.editing = false;
+            return previousState;
+        });
+    }
+
+    handleAdd() {
+
+    }
+
     onSelectionUpdated(selections) {
+
+        this.toBeDeleted = selections;
 
         if (selections.size > 0) {
             this.setDeleteAllowed(true);
@@ -65,19 +101,29 @@ class Window extends Component {
     }
 
     handleDeleteClick() {
+        console.log(this.toBeDeleted);
 
+        this.setState(previousState => {
+            this.toBeDeleted.forEach(it => {
+                previousState.items.delete(it);
+            });
+            previousState.topBarSettings.editing = false;
+            return previousState;
+        });
     }
 
     handleSelectAllClick() {
-        this.list.selectAll();
+        this.toBeDeleted = new Set(this.state.items);
+
+        this.list.select(this.toBeDeleted);
         this.setDeleteAllowed(true);
     }
 
-    _setListCallback(list) {
+    listCallback(list) {
         this.list = list;
     }
 
-    _setBottomBarCallback(bottomBar) {
+    bottomBarCallback(bottomBar) {
         this.bottomBar = bottomBar;
     }
 }
