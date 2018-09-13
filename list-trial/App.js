@@ -13,17 +13,6 @@ class Window extends Component {
         let names = new Set(['Devin', 'Jackson', 'James', 'Joel', 'John', 'Jillian', 'Jimmy', 'Julie']);
 
         this.state = { items: names, topBarSettings: { editing: false } };
-
-        this.onSelectionUpdated = this.onSelectionUpdated.bind(this);
-        this.setDeleteAllowed = this.setDeleteAllowed.bind(this);
-        this.handleDeleteClick = this.handleDeleteClick.bind(this);
-        this.handleSelectAllClick = this.handleSelectAllClick.bind(this);
-        this.bottomBarCallback = this.bottomBarCallback.bind(this);
-        this.listCallback = this.listCallback.bind(this);
-        this.handleAdd = this.handleAdd.bind(this);
-        this.handleEditStart = this.handleEditStart.bind(this);
-        this.handleEditCancel = this.handleEditCancel.bind(this);
-        this.handleAddInput = this.handleAddInput.bind(this);
     }
 
     render() {
@@ -65,15 +54,17 @@ class Window extends Component {
         );
     }
 
-    handleEditStart() {
+    handleEditStart = () => {
         this.setState(previousState => {
             previousState.topBarSettings.editing = true;
             return previousState;
         });
     }
 
-    handleEditCancel() {
-        this.toBeDeleted.clear();
+    handleEditCancel = () => {
+        if (this.toBeDeleted) {
+            this.toBeDeleted.clear();
+        }
 
         this.setState(previousState => {
             previousState.topBarSettings.editing = false;
@@ -81,7 +72,7 @@ class Window extends Component {
         });
     }
 
-    handleAdd() {
+    handleAdd = () => {
         AlertIOS.prompt(
             'Add',
             'Enter string to add it to whitelist.',
@@ -100,7 +91,7 @@ class Window extends Component {
         );
     }
 
-    handleAddInput(text) {
+    handleAddInput = (text) => {
         this.setState(previousState => {
             previousState.items.add(text);
             previousState.topBarSettings.editing = false;
@@ -108,8 +99,7 @@ class Window extends Component {
         });
     }
 
-    onSelectionUpdated(selections) {
-
+    onSelectionUpdated = (selections) => {
         this.toBeDeleted = selections;
 
         if (selections.size > 0) {
@@ -119,14 +109,14 @@ class Window extends Component {
         }
     }
 
-    setDeleteAllowed(allowed) {
+    setDeleteAllowed = (allowed) => {
         this.bottomBar.setState(previousState => {
             previousState.deleteAllowed = allowed;
             return previousState;
         });
     }
 
-    handleDeleteClick() {
+    handleDeleteClick = () => {
         this.setState(previousState => {
             this.toBeDeleted.forEach(it => {
                 previousState.items.delete(it);
@@ -136,18 +126,17 @@ class Window extends Component {
         });
     }
 
-    handleSelectAllClick() {
+    handleSelectAllClick = () => {
         this.toBeDeleted = new Set(this.state.items);
-
         this.list.select(this.toBeDeleted);
         this.setDeleteAllowed(true);
     }
 
-    listCallback(list) {
+    listCallback = (list) => {
         this.list = list;
     }
 
-    bottomBarCallback(bottomBar) {
+    bottomBarCallback = (bottomBar) => {
         this.bottomBar = bottomBar;
     }
 }

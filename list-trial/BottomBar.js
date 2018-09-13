@@ -9,8 +9,6 @@ class BottomBar extends Component {
         super(props);
 
         this.state = { deleteAllowed: false };
-        this.onDeleteClicked = this.onDeleteClicked.bind(this);
-        this.onSelectAllClicked = this.onSelectAllClicked.bind(this);
 
         props.callback(this);
     }
@@ -31,11 +29,11 @@ class BottomBar extends Component {
         );
     }
 
-    onDeleteClicked() {
+    onDeleteClicked = () => {
         this.props.window.handleDeleteClick();
     }
 
-    onSelectAllClicked() {
+    onSelectAllClicked = () => {
         this.props.window.handleSelectAllClick();
     }
 }

@@ -30,13 +30,13 @@ class StringList extends Component {
 
     constructor(props) {
         super(props);
+
         this.state = { selections: new Set([]) };
 
-        this.select = this.select.bind(this);
         props.callback(this);
     }
 
-    select(selections) {
+    select = (selections) => {
         this.setState(previousState => {
             return { selections }
         });
